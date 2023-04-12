@@ -1,0 +1,41 @@
+﻿@page "/downloads"
+@using BlazorRemainig.Services;
+@inject IFileDownload fileDownload;
+
+<h3>Downloads</h3>
+@if (previewImages.Count > 0)
+{
+	<div class="card">
+		<div class="row align-items-start">
+			@foreach(var item in previewImages)
+			{
+				var type = item.Split(";");
+				<div class="col-2">
+					@if(type[0].Contains("image")){
+						<img src="@item" width="100" height="100" alt="some thing wrong" >
+					}
+					else
+					{
+						if (type[0].Contains("pdf"))
+						{
+							<img src="images/pdf.svg" alt="some thing wrong"/>
+						}
+					}
+					<button @onclick="()=>DownloadFile(item)">Download </button>
+				</div>
+				
+			}
+		</div>
+	</div>
+}
+@code {
+	private List<string> previewImages = new List<string>();
+	protected async override Task OnInitializedAsync()
+	{
+		previewImages = await fileDownload.GetUploadFiles();
+	}
+	private async Task DownloadFile(string url)
+	{
+		await fileDownload.DownloadFile(url);
+	}
+}
